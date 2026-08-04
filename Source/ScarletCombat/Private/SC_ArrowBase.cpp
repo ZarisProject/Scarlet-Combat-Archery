@@ -23,6 +23,8 @@ ASC_ArrowBase::ASC_ArrowBase()
 void ASC_ArrowBase::BeginPlay()
 {
 	Super::BeginPlay();
+
+	PreviousLocation = GetActorLocation();
 }
 
 // Called every frame
@@ -32,11 +34,29 @@ void ASC_ArrowBase::Tick(float DeltaTime)
 
 	LocalTime += DeltaTime;
 
-	UpdateGravity(DeltaTime);
-	UpdateAirFriction(DeltaTime);
-	UpdateLift(DeltaTime);
-	UpdateWind(DeltaTime);
-	UpdateTurbulence(DeltaTime);
+	if (ProjectileMovement->IsActive())
+	{
+		// Hit Detection
+		FHitResult HitResult;
+		bool Hit = FlightTrace(HitResult);
+
+		if (Hit)
+		{
+			// Processing surface interactions
+			// ...
+			SetActorLocation(HitResult.Location);
+			Land(HitResult);
+		}
+
+		// Processing flight physics
+		UpdateGravity(DeltaTime);
+		UpdateAirFriction(DeltaTime);
+		UpdateLift(DeltaTime);
+		UpdateWind(DeltaTime);
+		UpdateTurbulence(DeltaTime);
+	
+		PreviousLocation = GetActorLocation();
+	}
 }
 
 
@@ -105,8 +125,43 @@ void ASC_ArrowBase::UpdateTurbulence(float DeltaTime)
 {
 	FVector Force = GetTurbulenceVector(GetActorLocation()) * Turbulence * AirFriction * (1 - Stability);
 	Force *= UKismetMathLibrary::Lerp(0.5f, 2.f, LocalTime / 5.f);
+	Force *= ProjectileMovement->Velocity.Size() / ReferenceSpeed;
 
 	ProjectileMovement->Velocity += Force / Mass * DeltaTime;
 }
 
 
+// HIT DETECTION
+
+// Casts a line trace between previous and current arrow location
+bool ASC_ArrowBase::FlightTrace(FHitResult& OutHit)
+{
+	FVector Start = PreviousLocation;
+	FVector End = GetActorLocation();
+
+	FCollisionQueryParams Params = FCollisionQueryParams();
+	if (IgnoreOwner)
+		Params.AddIgnoredActor(GetOwner());
+
+	return GetWorld()->LineTraceSingleByChannel(OutHit, Start, End, TraceChannel, Params);
+}
+
+
+// SURFACE INTERACTION
+
+// Landing the arrow
+void ASC_ArrowBase::Land(const FHitResult& Hit)
+{
+	ProjectileMovement->Deactivate();
+
+	// Attachment
+	if (Hit.GetComponent())
+	{
+		FAttachmentTransformRules AttachmentRules(EAttachmentRule::KeepWorld, true);
+		AttachToComponent(Hit.GetComponent(), AttachmentRules, Hit.BoneName);
+	}
+
+	// Interface call
+
+	// Delegates
+}

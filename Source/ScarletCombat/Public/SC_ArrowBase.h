@@ -15,7 +15,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Projectile, meta = (AllowPrivateAccess = "true"))
 	class UProjectileMovementComponent* ProjectileMovement;
 
+	// Cache
 	float LocalTime = 0.0;
+	FVector PreviousLocation = FVector(0, 0, 0);
 
 public:	
 	// Sets default values for this actor's properties
@@ -40,6 +42,17 @@ public:
 	// 1 - complete resistance
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default|Properties")
 	float Stability = 0.5f;
+
+
+	// HIT DETECTION
+
+	// Collision channel used for hit detection
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default|Hit Detection")
+	TEnumAsByte<ECollisionChannel> TraceChannel = ECC_Visibility;
+
+	// Shall hit detection ignore arrow's owner actor
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default|Hit Detection")
+	bool IgnoreOwner = true;
 
 
 	// MODIFIERS
@@ -103,9 +116,17 @@ protected:
 	// Applies turbulence force to the arrow
 	void UpdateTurbulence(float DeltaTime);
 
+
+	// HIT DETECTION
+
+	// Casts a line trace between previous and current arrow location
+	bool FlightTrace(FHitResult& OutHit);
+
 	
 	// SURFACE INTERACTION
 	
+	// Landing the arrow
+	void Land(const FHitResult& Hit);
 
 
 public:	
