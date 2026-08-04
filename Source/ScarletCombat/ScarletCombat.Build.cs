@@ -26,6 +26,7 @@ public class ScarletCombat : ModuleRules
 			new string[]
 			{
 				"Core",
+                "ScarletStateMachines",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
