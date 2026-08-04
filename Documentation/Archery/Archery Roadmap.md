@@ -1,0 +1,22 @@
+- [x] Core component - `USC_ArcheryComponent`
+- [x] Interface - `ISC_ArcheryInterface`
+	- [x] Animation data
+	- [x] Physics properties data
+- [ ] Arrow mechanics
+	- [ ] Gravity
+	- [ ] Air friction
+	- [ ] Lift
+	- [ ] Stability
+	- [ ] Piercing
+	- [ ] Bouncing
+	- [ ] Impact Impulse
+	- [ ] Landing
+	- [ ] Delegates
+		- [ ] On landed
+		- [ ] On bounced
+		- [ ] On pierced
+- [ ] Archery Arts
+	- [ ] Strong shot
+	- [ ] Rapid fire
+	- [ ] Multi-shot
+	- [ ] Trajectory curving

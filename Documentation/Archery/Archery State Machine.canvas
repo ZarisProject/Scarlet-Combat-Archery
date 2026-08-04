@@ -1,6 +1,6 @@
 {
 	"nodes":[
-		{"id":"7dd2f9337394f4f6","type":"text","text":"### Drawing\n\n","x":240,"y":-40,"width":250,"height":180},
+		{"id":"7dd2f9337394f4f6","type":"text","text":"### Draw\n\n","x":240,"y":-40,"width":250,"height":180},
 		{"id":"24e5be1935e9bf5c","type":"text","text":"### Release\n\n","x":880,"y":-40,"width":250,"height":180},
 		{"id":"4f53a12d6e897238","type":"text","text":"### Default\n\n","x":-400,"y":-40,"width":250,"height":180},
 		{"id":"fd358b1c7e5f5805","type":"text","text":"**If** *Bow Draw* input is down","x":-80,"y":10,"width":250,"height":80},

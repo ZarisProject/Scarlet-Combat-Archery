@@ -8,6 +8,22 @@
         "type": "tabs",
         "children": [
           {
+            "id": "6b09afc9c5cb733f",
+            "type": "leaf",
+            "pinned": true,
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Documentation/Archery/Archery Roadmap.md",
+                "mode": "source",
+                "source": false
+              },
+              "pinned": true,
+              "icon": "lucide-file",
+              "title": "Archery Roadmap"
+            }
+          },
+          {
             "id": "e4a9072876b791e3",
             "type": "leaf",
             "pinned": true,
@@ -30,8 +46,8 @@
               "state": {
                 "file": "Documentation/Archery/Archery State Machine.canvas",
                 "viewState": {
-                  "x": 452.2215147249361,
-                  "y": 180.2287885323927,
+                  "x": 243.40979580516318,
+                  "y": 183.82901501919366,
                   "zoom": -0.11111106695952416
                 }
               },
@@ -39,8 +55,23 @@
               "icon": "lucide-layout-dashboard",
               "title": "Archery State Machine"
             }
+          },
+          {
+            "id": "691cc957ca24ef8f",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Documentation/Archery/Arrow Flight Physics.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Arrow Flight Physics"
+            }
           }
-        ]
+        ],
+        "currentTab": 3
       }
     ],
     "direction": "vertical"
@@ -60,7 +91,9 @@
               "type": "file-explorer",
               "state": {
                 "sortOrder": "alphabetical",
-                "autoReveal": false
+                "autoReveal": false,
+                "showSearch": false,
+                "searchQuery": ""
               },
               "icon": "lucide-folder-closed",
               "title": "Files"
@@ -203,13 +236,24 @@
       "obsidian-excalidraw-plugin:New drawing": false
     }
   },
-  "active": "e4a9072876b791e3",
+  "active": "691cc957ca24ef8f",
   "lastOpenFiles": [
-    "Documentation/Archery/Archery State Machine.canvas",
+    "Intermediate/Build/Win64/x64/UnrealEditor/Development/ScarletCombat/UnrealEditor-ScarletCombat.sup.lib",
+    "Intermediate/Build/Win64/x64/UnrealEditor/Development/ScarletCombat/UnrealEditor-ScarletCombat.sup.exp",
+    "Intermediate/Build/Win64/x64/UnrealEditor/Development/ScarletCombat/UnrealEditor-ScarletCombat.lib",
+    "Binaries/Win64/UnrealEditor-ScarletCombat.pdb",
+    "Intermediate/Build/Win64/UnrealEditor/Inc/ScarletCombat/UHT/ScarletCombat.init.gen.cpp.tmp",
+    "Intermediate/Build/Win64/UnrealEditor/Inc/ScarletCombat/UHT/SC_ArrowBase.gen.cpp.tmp",
+    "Source/ScarletCombat/Public/mjojbsgs.rua~",
+    "Source/ScarletCombat/Public/dnt4mesd.ybb~",
+    "Documentation/Archery/Archery Roadmap.md",
+    "Documentation/Archery/Arrow Flight Physics.md",
+    "Intermediate/Build/Win64/UnrealEditor/Inc/ScarletCombat/UHT/SC_ArrowBase.generated.h.tmp",
+    "Content/Meshes/Arrow/Arrow.uasset",
+    "Content/Meshes/Arrow",
     "Documentation/Archery/Archery Code Design.excalidraw.md",
-    "Documentation/Excalidraw",
-    "README.md",
-    "Documentation/Archery",
-    "Documentation"
+    "Documentation/Archery/Archery State Machine.canvas",
+    "Documentation/Archery/Archery Component.md",
+    "README.md"
   ]
 }
