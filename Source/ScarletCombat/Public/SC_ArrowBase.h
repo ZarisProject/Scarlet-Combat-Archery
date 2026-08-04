@@ -11,8 +11,11 @@ class SCARLETCOMBAT_API ASC_ArrowBase : public AActor
 {
 	GENERATED_BODY()
 	
+protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Projectile, meta = (AllowPrivateAccess = "true"))
 	class UProjectileMovementComponent* ProjectileMovement;
+
+	float LocalTime = 0.0;
 
 public:	
 	// Sets default values for this actor's properties
@@ -63,6 +66,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default|Modifiers")
 	float TurbulenceScale = 0.005f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default|Modifiers")
+	float TurbulenceTimeScale = 10.f;
+
 	// CONSTANTS
 	
 	// Free fall acceleration
@@ -73,11 +79,9 @@ public:
 	float ReferenceSpeed = 10000.f;
 
 protected:
-	
-	// Returns a normalized air turbulence vector in the specified location
-	FVector GetTurbulenceVector(const FVector& Location);
 
-protected:
+	// FLIGHT PHYSICS
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -93,8 +97,16 @@ protected:
 	// Applies wind force to the arrow
 	void UpdateWind(float DeltaTime);
 
+	// Returns a normalized air turbulence vector in the specified location
+	FVector GetTurbulenceVector(const FVector& Location);
+
 	// Applies turbulence force to the arrow
 	void UpdateTurbulence(float DeltaTime);
+
+	
+	// SURFACE INTERACTION
+	
+
 
 public:	
 	// Called every frame
