@@ -35,13 +35,17 @@ public:
 
 	// Lift force applied to the arrow when it is traveling at the Reference Speed
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default|Properties")
-	float Lift = 100.0;
+	float Lift = 250.0;
 
 	// How much resistance the arrow has to air turbulence (0 - 1 range):
 	// 0 - no resistance
 	// 1 - complete resistance
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default|Properties")
 	float Stability = 0.5f;
+
+	// Side profile surface area relative to the front, used for approximating aerodynamics of the arrow
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default|Properties")
+	float SideSurfaceArea = 3.f;
 
 
 	// HIT DETECTION
@@ -82,6 +86,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default|Modifiers")
 	float TurbulenceTimeScale = 10.f;
 
+	// How fast arrow's rotation matches the velocity direction
+	// Resulting speed = Stability * (1 / SurfaceAreaMultiplier(Velocity * -1)) * RotationInterpolationSpeedMultiplier
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default|Modifiers")
+	float RotationInterpolationSpeedMultiplier = 5.f;
+
+
 	// CONSTANTS
 	
 	// Free fall acceleration
@@ -98,8 +108,14 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	// Updates rotation interpolation
+	void UpdateRotation(float DeltaTime);
+
 	// Applies gravity force to the arrow
 	void UpdateGravity(float DeltaTime);
+
+	// Returns aerodynamic surface area multiplier based on the direction of the force
+	float GetSurfaceAreaMultiplier(const FVector& ForceVector);
 
 	// Applies air friction force to the arrow
 	void UpdateAirFriction(float DeltaTime);

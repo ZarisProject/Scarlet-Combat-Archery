@@ -16,7 +16,7 @@ ASC_ArrowBase::ASC_ArrowBase()
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Projectile Movement"));
 
 	ProjectileMovement->ProjectileGravityScale = 0.0f;
-	ProjectileMovement->bRotationFollowsVelocity = true;
+	ProjectileMovement->bRotationFollowsVelocity = false;
 }
 
 // Called when the game starts or when spawned
@@ -36,6 +36,8 @@ void ASC_ArrowBase::Tick(float DeltaTime)
 
 	if (ProjectileMovement->IsActive())
 	{
+		UpdateRotation(DeltaTime);
+
 		// Hit Detection
 		FHitResult HitResult;
 		bool Hit = FlightTrace(HitResult);
@@ -59,15 +61,23 @@ void ASC_ArrowBase::Tick(float DeltaTime)
 	}
 }
 
-
-// FLIGHT PHYSICS
-
 // Launches the arrow in the specified direction
 void ASC_ArrowBase::Initialize(FVector LaunchDirection, float InitialSpeed)
 {
 	ProjectileMovement->Velocity = LaunchDirection * InitialSpeed;
 }
 
+// Updates rotation interpolation
+void ASC_ArrowBase::UpdateRotation(float DeltaTime)
+{
+	FRotator TargetRotation = ProjectileMovement->Velocity.Rotation();
+	float Speed = RotationInterpolationSpeedMultiplier * (Stability + 0.01f) / GetSurfaceAreaMultiplier(ProjectileMovement->Velocity * -1.f);
+	FRotator NewRotation = UKismetMathLibrary::RInterpTo(GetActorRotation(), TargetRotation, DeltaTime, Speed);
+	SetActorRotation(NewRotation);
+}
+
+
+// FLIGHT PHYSICS
 
 // Applies gravity force to the arrow
 void ASC_ArrowBase::UpdateGravity(float DeltaTime)
@@ -77,12 +87,19 @@ void ASC_ArrowBase::UpdateGravity(float DeltaTime)
 	ProjectileMovement->Velocity += Force / Mass * DeltaTime;
 }
 
+// Returns aerodynamic surface area multiplier based on the direction of the force
+float ASC_ArrowBase::GetSurfaceAreaMultiplier(const FVector& ForceVector)
+{
+	float angle = UKismetMathLibrary::Dot_VectorVector(ForceVector.GetSafeNormal(), GetActorForwardVector());
+	return UKismetMathLibrary::Lerp(SideSurfaceArea, 1.f, abs(angle));
+}
+
 // Applies air friction force to the arrow
 void ASC_ArrowBase::UpdateAirFriction(float DeltaTime)
 {
 	float Speed = ProjectileMovement->Velocity.Length();
 	FVector ForceDirection = -1.f * ProjectileMovement->Velocity / Speed;
-	FVector Force = ForceDirection * 0.5 * AirDensity * Speed * Speed * AirFriction;
+	FVector Force = ForceDirection * 0.5 * AirDensity * Speed * Speed * AirFriction * GetSurfaceAreaMultiplier(ForceDirection);
 
 	ProjectileMovement->Velocity += Force / Mass * DeltaTime;
 }
@@ -99,7 +116,7 @@ void ASC_ArrowBase::UpdateLift(float DeltaTime)
 // Applies wind force to the arrow
 void ASC_ArrowBase::UpdateWind(float DeltaTime)
 {
-	FVector Force = WindDirection * WindSpeed * AirFriction;
+	FVector Force = WindDirection * WindSpeed * AirFriction * GetSurfaceAreaMultiplier(WindDirection);
 
 	ProjectileMovement->Velocity += Force / Mass * DeltaTime;
 }
