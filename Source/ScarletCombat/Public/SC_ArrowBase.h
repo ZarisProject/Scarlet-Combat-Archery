@@ -45,7 +45,21 @@ public:
 
 	// Side profile surface area relative to the front, used for approximating aerodynamics of the arrow
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default|Properties")
-	float SideSurfaceArea = 3.f;
+	float SideSurfaceArea = 5.f;
+
+	// How blunt or "piercy" the arrow is
+	// -1 is very blunt
+	// 1 is very good at piercing
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default|Properties")
+	float BluntToPiercingBalance = 0.f;
+
+	// How long is the arrow mesh (used for piercing assuming that arrow's origin is in the center of mass)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default|Properties")
+	float ArrowLength = 100.f;
+
+	// Reduction of velocity after a perfect bounce
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default|Properties")
+	float BounceVelocityDumping = 0.6f;
 
 
 	// HIT DETECTION
@@ -101,6 +115,19 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Default|Constants")
 	float ReferenceSpeed = 10000.f;
 
+	// How far into the surface of density 1.f the arrow would go if it was traveling at the Reference Speed and 
+	// hit the surface at the right (90 degrees) angle
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default|Constants")
+	float PiercingFactor = 100.f;
+
+	// Piercing depth below which we assume that the arrow bounces off the surface
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default|Constants")
+	float BounceThreshold = 10.f;
+
+	// Minimum speed of the arrow that allow it to bounce (needed to prevent infinite bouncing)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default|Constants")
+	float BounceVelocityRequirement = 500.f;
+
 protected:
 
 	// FLIGHT PHYSICS
@@ -143,6 +170,19 @@ protected:
 	
 	// Landing the arrow
 	void Land(const FHitResult& Hit);
+
+	// Bouncing the arrow off the surface
+	void Bounce(const FHitResult& Hit);
+
+
+	// Returns material's density in the hit location
+	float SampleMaterialDensity(const FHitResult& Hit);
+
+	// Returns material's restitution (bounciness) in the hit location
+	float SampleMaterialRestitution(const FHitResult& Hit);
+
+	// Calculating how far the arrow will go into the surface
+	float CalculatePiercingDepth(const FHitResult& Hit);
 
 
 public:	

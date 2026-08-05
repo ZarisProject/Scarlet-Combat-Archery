@@ -45,9 +45,18 @@ void ASC_ArrowBase::Tick(float DeltaTime)
 		if (Hit)
 		{
 			// Processing surface interactions
-			// ...
-			SetActorLocation(HitResult.Location);
-			Land(HitResult);
+			
+			float Depth = CalculatePiercingDepth(HitResult);
+			float Speed = ProjectileMovement->Velocity.Length();
+
+			if (Depth < BounceThreshold && Speed >= BounceVelocityRequirement)
+				Bounce(HitResult);
+
+			else
+			{
+				SetActorLocation(HitResult.Location + GetActorForwardVector() * (Depth - ArrowLength / 2.f));
+				Land(HitResult);
+			}
 		}
 
 		// Processing flight physics
@@ -140,7 +149,7 @@ FVector ASC_ArrowBase::GetTurbulenceVector(const FVector& Location)
 // Applies turbulence force to the arrow
 void ASC_ArrowBase::UpdateTurbulence(float DeltaTime)
 {
-	FVector Force = GetTurbulenceVector(GetActorLocation()) * Turbulence * AirFriction * (1 - Stability);
+	FVector Force = GetTurbulenceVector(GetActorLocation()) * Turbulence * (1 - Stability);
 	Force *= UKismetMathLibrary::Lerp(0.5f, 2.f, LocalTime / 5.f);
 	Force *= ProjectileMovement->Velocity.Size() / ReferenceSpeed;
 
@@ -181,4 +190,64 @@ void ASC_ArrowBase::Land(const FHitResult& Hit)
 	// Interface call
 
 	// Delegates
+}
+
+// Bouncing the arrow off the surface
+void ASC_ArrowBase::Bounce(const FHitResult& Hit)
+{
+	float Speed = ProjectileMovement->Velocity.Length();
+	FVector VelocityDirection = ProjectileMovement->Velocity / (Speed + 1e-6f);
+
+	// Angle factor calculation
+	float Angle = UKismetMathLibrary::Dot_VectorVector(Hit.Normal, VelocityDirection);
+	float AngleFactor = UKismetMathLibrary::FClamp(1.f - abs(Angle), 0.1f, 1.f);
+
+	// Restitution
+	float Restitution = SampleMaterialRestitution(Hit);
+
+	// Resulting Velocity
+	float ResultingSpeed = Speed * AngleFactor * Restitution * BounceVelocityDumping;
+	FVector ResultingDirection = UKismetMathLibrary::GetReflectionVector(VelocityDirection, Hit.Normal);
+
+	ProjectileMovement->Velocity = ResultingSpeed * ResultingDirection;
+
+	// Offsetting the arrow from the surface
+	FVector OffsetedLocation = Hit.Location + Hit.Normal * 5.f;
+	PreviousLocation = OffsetedLocation;
+	SetActorLocation(OffsetedLocation);
+}
+
+// Returns material density in the hit location
+float ASC_ArrowBase::SampleMaterialDensity(const FHitResult& Hit)
+{
+	return 1.0f;
+}
+
+// Returns material's restitution (bounciness) in the hit location
+float ASC_ArrowBase::SampleMaterialRestitution(const FHitResult& Hit)
+{
+	return 1.0f;
+}
+
+
+// Calculating how far the arrow will go into the surface
+float ASC_ArrowBase::CalculatePiercingDepth(const FHitResult& Hit)
+{
+	float Speed = ProjectileMovement->Velocity.Length();
+	FVector VelocityDirection = ProjectileMovement->Velocity / (Speed + 1e-6f);
+
+	// Angle factor calculation
+	float Angle = UKismetMathLibrary::Dot_VectorVector(-1.f * Hit.Normal, VelocityDirection);
+	float AngleFactor = abs(Angle);
+
+	// Speed factor calculation
+	float SpeedFactor = PiercingFactor * Speed / ReferenceSpeed;
+
+	// Property factor
+	float PropertyFactor = (BluntToPiercingBalance + 1.f) / 2.f;
+
+	// Density
+	float Density = SampleMaterialDensity(Hit);
+
+	return AngleFactor * SpeedFactor * PropertyFactor / Density;
 }
