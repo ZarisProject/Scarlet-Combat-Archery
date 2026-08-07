@@ -30,6 +30,14 @@ public:
 	// Sets default values for this actor's properties
 	ASC_ArrowBase();
 
+
+	// TOGGLES
+
+	// Whether to apply a physical impulse to the hit components
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default|Toggles")
+	bool EnableImpactImpulse = true;
+
+
 	// PROPERTIES
 	
 	// Mass of the arrow, affects it's gravity
@@ -144,6 +152,22 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default|Constants")
 	float BounceVelocityRequirement = 500.f;
 
+	// Scales physical impulse applied to the hit component
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default|Constants")
+	float ImpactImpulseMultiplier = 1.f;
+
+	// Scales physical impulse caused by landing
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default|Constants")
+	float LandImpactImpulseMultiplier = 1.f;
+
+	// Scales physical impulse caused by bouncing
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default|Constants")
+	float BounceImpactImpulseMultiplier = 0.8f;
+
+	// Scales physical impulse caused by piercing
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default|Constants")
+	float PiercingImpactImpulseMultiplier = 0.4f;
+
 
 	// DELEGATES
 
@@ -211,6 +235,9 @@ protected:
 
 	// Attempting to go through the surface
 	bool Pierce(const FHitResult& Hit, float PiercingDepth);
+
+	// Applies an impulse to the hit component
+	void ImpactImpulse(const FHitResult& Hit, float ImpulseScale);
 
 
 	// Returns material's density in the hit location

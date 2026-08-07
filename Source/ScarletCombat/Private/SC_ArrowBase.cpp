@@ -3,9 +3,12 @@
 
 #include "SC_ArrowBase.h"
 
+#include "SC_ArcheryInterface.h"
+
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+
 
 // Sets default values
 ASC_ArrowBase::ASC_ArrowBase()
@@ -51,20 +54,20 @@ void ASC_ArrowBase::Tick(float DeltaTime)
 
 			if (Depth < BounceThreshold && Speed >= BounceVelocityRequirement)
 			{
+				ImpactImpulse(HitResult, BounceImpactImpulseMultiplier);
 				Bounce(HitResult);
-				// Apply Impact Impulse
 			}
 
 			else if (Pierce(HitResult, Depth))
 			{
-				// Apply Impact Impulse
+				ImpactImpulse(HitResult, PiercingImpactImpulseMultiplier);
 			}
 
 			else
 			{
+				ImpactImpulse(HitResult, LandImpactImpulseMultiplier);
 				SetActorLocation(HitResult.Location + GetActorForwardVector() * (Depth - ArrowLength / 2.f));
 				Land(HitResult);
-				// Apply Impact Impulse
 			}
 		}
 
@@ -175,11 +178,12 @@ bool ASC_ArrowBase::FlightTrace(FHitResult& OutHit)
 	FVector Start = PreviousLocation;
 	FVector End = GetActorLocation();
 
-	FCollisionQueryParams Params = FCollisionQueryParams();
+	FCollisionQueryParams QueryParams = FCollisionQueryParams();
 	if (IgnoreOwner)
-		Params.AddIgnoredActor(GetOwner());
+		QueryParams.AddIgnoredActor(GetOwner());
+	QueryParams.bReturnPhysicalMaterial = true;
 
-	return GetWorld()->LineTraceSingleByChannel(OutHit, Start, End, TraceChannel, Params);
+	return GetWorld()->LineTraceSingleByChannel(OutHit, Start, End, TraceChannel, QueryParams);
 }
 
 
@@ -197,7 +201,18 @@ void ASC_ArrowBase::Land(const FHitResult& Hit)
 		AttachToComponent(Hit.GetComponent(), AttachmentRules, Hit.BoneName);
 	}
 
-	// Interface call
+	// Interface calls
+	if (Hit.GetActor() && Hit.GetActor()->Implements<USC_ArcheryInterface>())
+		ISC_ArcheryInterface::Execute_Archery_OnArrowContact(Hit.GetActor(), this, Hit);
+
+	if (Hit.GetComponent() && Hit.GetComponent()->Implements<USC_ArcheryInterface>())
+		ISC_ArcheryInterface::Execute_Archery_OnArrowContact(Hit.GetComponent(), this, Hit);
+
+	if (Hit.GetActor() && Hit.GetActor()->Implements<USC_ArcheryInterface>())
+		ISC_ArcheryInterface::Execute_Archery_OnArrowLanded(Hit.GetActor(), this, Hit);
+
+	if (Hit.GetComponent() && Hit.GetComponent()->Implements<USC_ArcheryInterface>())
+		ISC_ArcheryInterface::Execute_Archery_OnArrowLanded(Hit.GetComponent(), this, Hit);
 
 	// Delegates
 	OnContact.Broadcast(Hit);
@@ -237,6 +252,17 @@ void ASC_ArrowBase::Bounce(const FHitResult& Hit)
 	SetActorRotation(ResultingDirection.Rotation());
 
 	// Interface calls
+	if (Hit.GetActor() && Hit.GetActor()->Implements<USC_ArcheryInterface>())
+		ISC_ArcheryInterface::Execute_Archery_OnArrowContact(Hit.GetActor(), this, Hit);
+
+	if (Hit.GetComponent() && Hit.GetComponent()->Implements<USC_ArcheryInterface>())
+		ISC_ArcheryInterface::Execute_Archery_OnArrowContact(Hit.GetComponent(), this, Hit);
+
+	if (Hit.GetActor() && Hit.GetActor()->Implements<USC_ArcheryInterface>())
+		ISC_ArcheryInterface::Execute_Archery_OnArrowBounced(Hit.GetActor(), this, Hit, Angle);
+
+	if (Hit.GetComponent() && Hit.GetComponent()->Implements<USC_ArcheryInterface>())
+		ISC_ArcheryInterface::Execute_Archery_OnArrowBounced(Hit.GetComponent(), this, Hit, Angle);
 
 	// Delegates
 	OnContact.Broadcast(Hit);
@@ -267,6 +293,17 @@ bool ASC_ArrowBase::Pierce(const FHitResult& Hit, float PiercingDepth)
 		ProjectileMovement->Velocity *= VelocityDumping;
 
 		// Interface calls
+		if (Hit.GetActor() && Hit.GetActor()->Implements<USC_ArcheryInterface>())
+			ISC_ArcheryInterface::Execute_Archery_OnArrowContact(Hit.GetActor(), this, Hit);
+
+		if (Hit.GetComponent() && Hit.GetComponent()->Implements<USC_ArcheryInterface>())
+			ISC_ArcheryInterface::Execute_Archery_OnArrowContact(Hit.GetComponent(), this, Hit);
+
+		if (Hit.GetActor() && Hit.GetActor()->Implements<USC_ArcheryInterface>())
+			ISC_ArcheryInterface::Execute_Archery_OnArrowPierced(Hit.GetActor(), this, Hit, PiercingDepth);
+
+		if (Hit.GetComponent() && Hit.GetComponent()->Implements<USC_ArcheryInterface>())
+			ISC_ArcheryInterface::Execute_Archery_OnArrowPierced(Hit.GetComponent(), this, Hit, PiercingDepth);
 
 		// Delegates
 		OnContact.Broadcast(Hit);
@@ -280,15 +317,79 @@ bool ASC_ArrowBase::Pierce(const FHitResult& Hit, float PiercingDepth)
 	return false;
 }
 
+// Applies an impulse to the hit component
+void ASC_ArrowBase::ImpactImpulse(const FHitResult& Hit, float ImpulseScale)
+{
+	if (!EnableImpactImpulse) return;
+
+	float Bluntness = (BluntToPiercingBalance * -1.f + 1.f) / 2.f;
+	float BluntFactor = UKismetMathLibrary::Lerp(0.1f, 1.f, Bluntness);
+
+	FVector Impulse = ProjectileMovement->Velocity * Mass * ImpactImpulseMultiplier * ImpulseScale * BluntFactor;
+	if (Hit.GetComponent())
+		if (Hit.GetComponent()->IsSimulatingPhysics())
+			Hit.GetComponent()->AddImpulseAtLocation(Impulse, Hit.Location, Hit.BoneName);
+}
+
 // Returns material density in the hit location
 float ASC_ArrowBase::SampleMaterialDensity(const FHitResult& Hit)
 {
+	// Sample attempt order:
+	// 1) Actor
+	// 2) Component
+	// 3) Physical Material
+
+	AActor* Actor = Hit.GetActor();
+	if (Actor && Actor->Implements<USC_ArcheryInterface>())
+	{
+		float Density = ISC_ArcheryInterface::Execute_Archery_GetMaterialDensity(Actor, Hit);
+		if (Density != 0.f)
+			return Density;
+	}
+
+	UPrimitiveComponent* Component = Hit.GetComponent();
+	if (Component && Component->Implements<USC_ArcheryInterface>())
+	{
+		float Density = ISC_ArcheryInterface::Execute_Archery_GetMaterialDensity(Component, Hit);
+		if (Density != 0.f)
+			return Density;
+	}
+
+	if (Hit.PhysMaterial.IsValid())
+		return Hit.PhysMaterial->Density;
+
+	// Fallback in case nothing works
 	return 1.0f;
 }
 
 // Returns material's restitution (bounciness) in the hit location
 float ASC_ArrowBase::SampleMaterialRestitution(const FHitResult& Hit)
 {
+	// Sample attempt order:
+	// 1) Actor
+	// 2) Component
+	// 3) Physical Material
+
+	AActor* Actor = Hit.GetActor();
+	if (Actor && Actor->Implements<USC_ArcheryInterface>())
+	{
+		float Restitution = ISC_ArcheryInterface::Execute_Archery_GetMaterialRestitution(Actor, Hit);
+		if (Restitution != 0.f)
+			return Restitution;
+	}
+
+	UPrimitiveComponent* Component = Hit.GetComponent();
+	if (Component && Component->Implements<USC_ArcheryInterface>())
+	{
+		float Restitution = ISC_ArcheryInterface::Execute_Archery_GetMaterialRestitution(Component, Hit);
+		if (Restitution != 0.f)
+			return Restitution;
+	}
+
+	if (Hit.PhysMaterial.IsValid())
+		return Hit.PhysMaterial->Restitution;
+
+	// Fallback in case nothing works
 	return 1.0f;
 }
 
