@@ -54,7 +54,6 @@ protected:
 
 // NORMAL ART
 // Average shooting speed, average launch impulse, single arrow, average cooldown
-
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default|ArcheryArts|Normal")
 	float Normal_DrawTime = 0.5f;
@@ -68,6 +67,23 @@ public:
 protected:
 	void Normal_Select();
 	void Normal_Shoot();
+
+
+// STRONG SHOT
+// Low shooting speed, high launch impulse, single arrow, long cooldown
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default|ArcheryArts|StrongShot")
+	float StrongShot_DrawTime = 1.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default|ArcheryArts|StrongShot")
+	float StrongShot_Cooldown = 0.5f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default|ArcheryArts|StrongShot")
+	float StrongShot_LaunchImpulse = 8000.f;
+
+protected:
+	void StrongShot_Select();
+	void StrongShot_Shoot();
 
 
 protected:
