@@ -50,12 +50,21 @@ void ASC_ArrowBase::Tick(float DeltaTime)
 			float Speed = ProjectileMovement->Velocity.Length();
 
 			if (Depth < BounceThreshold && Speed >= BounceVelocityRequirement)
+			{
 				Bounce(HitResult);
+				// Apply Impact Impulse
+			}
+
+			else if (Pierce(HitResult, Depth))
+			{
+				// Apply Impact Impulse
+			}
 
 			else
 			{
 				SetActorLocation(HitResult.Location + GetActorForwardVector() * (Depth - ArrowLength / 2.f));
 				Land(HitResult);
+				// Apply Impact Impulse
 			}
 		}
 
@@ -80,7 +89,8 @@ void ASC_ArrowBase::Initialize(FVector LaunchDirection, float InitialSpeed)
 void ASC_ArrowBase::UpdateRotation(float DeltaTime)
 {
 	FRotator TargetRotation = ProjectileMovement->Velocity.Rotation();
-	float Speed = RotationInterpolationSpeedMultiplier * (Stability + 0.01f) / GetSurfaceAreaMultiplier(ProjectileMovement->Velocity * -1.f);
+	float Speed = RotationInterpolationSpeedMultiplier * (Stability + 0.01f) / GetSurfaceAreaMultiplier(ProjectileMovement->Velocity * -1.f) 
+		/ (ProjectileMovement->Velocity.Length() / ReferenceSpeed + 1e-6f);
 	FRotator NewRotation = UKismetMathLibrary::RInterpTo(GetActorRotation(), TargetRotation, DeltaTime, Speed);
 	SetActorRotation(NewRotation);
 }
@@ -190,6 +200,8 @@ void ASC_ArrowBase::Land(const FHitResult& Hit)
 	// Interface call
 
 	// Delegates
+	OnContact.Broadcast(Hit);
+	OnLanded.Broadcast(Hit);
 }
 
 // Bouncing the arrow off the surface
@@ -199,22 +211,73 @@ void ASC_ArrowBase::Bounce(const FHitResult& Hit)
 	FVector VelocityDirection = ProjectileMovement->Velocity / (Speed + 1e-6f);
 
 	// Angle factor calculation
-	float Angle = UKismetMathLibrary::Dot_VectorVector(Hit.Normal, VelocityDirection);
-	float AngleFactor = UKismetMathLibrary::FClamp(1.f - abs(Angle), 0.1f, 1.f);
+	float Angle = abs(UKismetMathLibrary::Dot_VectorVector(Hit.Normal, VelocityDirection));
+	float AngleFactor = UKismetMathLibrary::Lerp(BounceMinimumAngleFactor, 1.f, 1.f - Angle);
 
 	// Restitution
 	float Restitution = SampleMaterialRestitution(Hit);
 
+	// Blunt factor
+	float Bluntness = (BluntToPiercingBalance * -1.f + 1.f) / 2.f;
+	float BluntFactor = UKismetMathLibrary::Lerp(0.1f, 1.f, Bluntness);
+
 	// Resulting Velocity
-	float ResultingSpeed = Speed * AngleFactor * Restitution * BounceVelocityDumping;
+	float ResultingSpeed = Speed * AngleFactor * Restitution * BluntFactor * BounceVelocityDumping;
 	FVector ResultingDirection = UKismetMathLibrary::GetReflectionVector(VelocityDirection, Hit.Normal);
 
 	ProjectileMovement->Velocity = ResultingSpeed * ResultingDirection;
 
 	// Offsetting the arrow from the surface
-	FVector OffsetedLocation = Hit.Location + Hit.Normal * 5.f;
+	float OffsetDistance = Angle * ArrowLength / 2.f;
+	FVector OffsetedLocation = Hit.Location + Hit.Normal * OffsetDistance;
 	PreviousLocation = OffsetedLocation;
 	SetActorLocation(OffsetedLocation);
+
+	// Orienting arrow to match the new velocity (no interpolation)
+	SetActorRotation(ResultingDirection.Rotation());
+
+	// Interface calls
+
+	// Delegates
+	OnContact.Broadcast(Hit);
+	OnBounced.Broadcast(Hit, Angle);
+}
+
+// Attempting to go through the surface
+bool ASC_ArrowBase::Pierce(const FHitResult& Hit, float PiercingDepth)
+{
+	FVector NewLocation = GetActorForwardVector() * PiercingDepth + Hit.Location;
+
+	FVector ForwardCheckEnd = NewLocation + GetActorForwardVector() * ArrowLength;
+	FVector BackwardCheckEnd = Hit.Location;
+
+	FHitResult ForwardCheckHit;
+	FHitResult BackwardCheckHit;
+
+	if (  !GetWorld()->LineTraceSingleByChannel(ForwardCheckHit, NewLocation, ForwardCheckEnd, TraceChannel)
+		&& GetWorld()->LineTraceSingleByChannel(BackwardCheckHit, NewLocation, BackwardCheckEnd, TraceChannel))
+	{
+		// Complete surface penetration - continuing flight
+
+		PreviousLocation = BackwardCheckHit.Location + BackwardCheckHit.Normal * 10.f;
+
+		float DepthRatio = PiercingDepth / FVector::Distance(Hit.Location, BackwardCheckHit.Location);
+		float VelocityDumping = PiercingVelocityDumping * DepthRatio / SampleMaterialDensity(Hit);
+		VelocityDumping = UKismetMathLibrary::FClamp(VelocityDumping, 0.f, 1.f);
+		ProjectileMovement->Velocity *= VelocityDumping;
+
+		// Interface calls
+
+		// Delegates
+		OnContact.Broadcast(Hit);
+		OnPierced.Broadcast(Hit, PiercingDepth);
+
+		return true;
+	}
+
+	// Stuck in the surface
+	SetActorLocation(NewLocation);
+	return false;
 }
 
 // Returns material density in the hit location

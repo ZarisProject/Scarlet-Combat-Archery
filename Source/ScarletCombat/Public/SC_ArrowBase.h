@@ -6,6 +6,13 @@
 #include "GameFramework/Actor.h"
 #include "SC_ArrowBase.generated.h"
 
+// DELEGAGATES
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnContact, const FHitResult&, Hit);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLanded, const FHitResult&, Hit);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnBounced, const FHitResult&, Hit, float, Angle);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPierced, const FHitResult&, Hit, float, Depth);
+
+// CLASS
 UCLASS()
 class SCARLETCOMBAT_API ASC_ArrowBase : public AActor
 {
@@ -60,6 +67,15 @@ public:
 	// Reduction of velocity after a perfect bounce
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default|Properties")
 	float BounceVelocityDumping = 0.6f;
+
+	// Minimum angle factor value used for bounce velocity dumping when arrow hits the surface at the right (90) angle
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default|Properties")
+	float BounceMinimumAngleFactor = 0.1f;
+
+	// Reduction of velocity after piercing a surface
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default|Properties")
+	float PiercingVelocityDumping = 0.4f;
+
 
 
 	// HIT DETECTION
@@ -128,6 +144,25 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default|Constants")
 	float BounceVelocityRequirement = 500.f;
 
+
+	// DELEGATES
+
+	// Fires when the arrow lands, bounces or pierces something
+	UPROPERTY(BlueprintAssignable, Category = "Delegates")
+	FOnContact OnContact;
+
+	// Fires when the arrow lands
+	UPROPERTY(BlueprintAssignable, Category = "Delegates")
+	FOnLanded OnLanded;
+
+	// Fires when the arrow bounces of a surface
+	UPROPERTY(BlueprintAssignable, Category = "Delegates")
+	FOnBounced OnBounced;
+
+	// Fires when the arrow pierces a surface and goes right through
+	UPROPERTY(BlueprintAssignable, Category = "Delegates")
+	FOnPierced OnPierced;
+
 protected:
 
 	// FLIGHT PHYSICS
@@ -173,6 +208,9 @@ protected:
 
 	// Bouncing the arrow off the surface
 	void Bounce(const FHitResult& Hit);
+
+	// Attempting to go through the surface
+	bool Pierce(const FHitResult& Hit, float PiercingDepth);
 
 
 	// Returns material's density in the hit location
