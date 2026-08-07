@@ -24,6 +24,27 @@ class SCARLETCOMBAT_API ISC_ArcheryInterface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 
+	// Should be implemented by every actor that can be used as an arrow
+	// Specifies initial velocity through launch impulse: velocity = impulse / arrow's mass
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ScarletCombat|Archery|Arrow")
+	void Archery_InitializeArrow(const FVector& LaunchImpulse);
+	virtual void Archery_InitializeArrow_Implementation(const FVector& LaunchImpulse) {}
+
+
+	// Should be implemented by the bow actor or by the entity that own the bow
+	// Returns location on which a newly shot arrow will spawn
+	// ArrowIndex and ArrowCount are used for multishot archery art
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ScarletCombat|Archery|ArcherActor")
+	FVector Archery_GetArrowLaunchLocation(int32 ArrowIndex = 0, int32 ArrowCount = 1);
+	virtual FVector Archery_GetArrowLaunchLocation_Implementation(int32 ArrowIndex = 0, int32 ArrowCount = 1) { return FVector::ZeroVector; }
+
+	// Should be implemented by the bow actor or by the entity that own the bow
+	// Returns direction in which a newly shot arrow will be launched
+	// ArrowIndex and ArrowCount are used for multishot archery art
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ScarletCombat|Archery|ArcherActor")
+	FVector Archery_GetArrowLaunchDirection(int32 ArrowIndex = 0, int32 ArrowCount = 1);
+	virtual FVector Archery_GetArrowLaunchDirection_Implementation(int32 ArrowIndex = 0, int32 ArrowCount = 1) { return FVector::ForwardVector; }
+
 
 	// Returns physical density of the material in the hit spot
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category="ScarletCombat|Archery|PhysicsProperties")

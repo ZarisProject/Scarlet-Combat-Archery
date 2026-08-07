@@ -26,8 +26,6 @@ ASC_ArrowBase::ASC_ArrowBase()
 void ASC_ArrowBase::BeginPlay()
 {
 	Super::BeginPlay();
-
-	PreviousLocation = GetActorLocation();
 }
 
 // Called every frame
@@ -82,11 +80,14 @@ void ASC_ArrowBase::Tick(float DeltaTime)
 	}
 }
 
-// Launches the arrow in the specified direction
-void ASC_ArrowBase::Initialize(FVector LaunchDirection, float InitialSpeed)
+// Should be implemented by every actor that can be used as an arrow
+// Specifies initial velocity through launch impulse: speed = velocity / arrow's mass
+void ASC_ArrowBase::Archery_InitializeArrow_Implementation(const FVector& LaunchImpulse)
 {
-	ProjectileMovement->Velocity = LaunchDirection * InitialSpeed;
+	ProjectileMovement->Velocity = LaunchImpulse / Mass;
+	PreviousLocation = GetActorLocation();
 }
+
 
 // Updates rotation interpolation
 void ASC_ArrowBase::UpdateRotation(float DeltaTime)

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "SC_ArcheryInterface.h"
 #include "SC_ArrowBase.generated.h"
 
 // DELEGAGATES
@@ -14,7 +15,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPierced, const FHitResult&, Hit,
 
 // CLASS
 UCLASS()
-class SCARLETCOMBAT_API ASC_ArrowBase : public AActor
+class SCARLETCOMBAT_API ASC_ArrowBase : public AActor, public ISC_ArcheryInterface
 {
 	GENERATED_BODY()
 	
@@ -254,7 +255,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Launches the arrow in the specified direction
-	UFUNCTION(BlueprintCallable, Category="ScarletCombat|Archery|Arrow")
-	void Initialize(FVector LaunchDirection, float InitialSpeed);
+	// Should be implemented by every actor that can be used as an arrow
+	// Specifies initial speed through launch impulse: speed = impulse / arrow's mass
+	virtual void Archery_InitializeArrow_Implementation(const FVector& LaunchImpulse);
 };
