@@ -36,9 +36,14 @@ void USC_ArcheryComponent::Update(float DeltaTime)
 {
 	if (CurrentState == ESC_ArcheryState::Draw)
 	{
+		if (FullyDrawn) return;
+
 		CurrentDrawTime += DeltaTime;
 		if (CurrentDrawTime >= DrawTime)
+		{
+			FullyDrawn = true;
 			OnFullyDrawn.Broadcast();
+		}
 	}
 
 	else if (CurrentState == ESC_ArcheryState::Release)
@@ -84,6 +89,7 @@ void USC_ArcheryComponent::DrawBow()
 	{
 		CurrentState = ESC_ArcheryState::Draw;
 		CurrentDrawTime = 0.0f;
+		FullyDrawn = false;
 	}
 
 	else if (CurrentState == ESC_ArcheryState::Release)
@@ -97,7 +103,7 @@ void USC_ArcheryComponent::ReleaseBow()
 {
 	if (CurrentState == ESC_ArcheryState::Draw)
 	{
-		if (IsFullyDrawn())
+		if (FullyDrawn)
 			ReleaseShot();
 
 		else

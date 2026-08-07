@@ -34,6 +34,8 @@ protected:
 	float CurrentDrawTime = 0.0f;
 	float CurrentCooldownTime = 0.0f;
 
+	bool FullyDrawn = false;
+
 	// Input cache
 	bool WantsToDraw = false;
 
@@ -102,7 +104,7 @@ public:
 	float GetDrawTime() { return DrawTime; }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "ScarletCombat|Archery|ArcheryComponent")
-	bool IsFullyDrawn() { return CurrentDrawTime >= DrawTime; }
+	bool IsFullyDrawn() { return FullyDrawn; }
 
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "ScarletCombat|Archery|ArcheryComponent")
