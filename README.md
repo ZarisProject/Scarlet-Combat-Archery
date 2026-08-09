@@ -1,3 +1,3 @@
-# Scarlet Combat
+# Scarlet Combat: Archery
 
-A collection of UE5 combat systems used in AkarFire's games
+An archery combat system originally built for Zaris Project
