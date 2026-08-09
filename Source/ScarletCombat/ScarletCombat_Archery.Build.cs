@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class ScarletCombat : ModuleRules
+public class ScarletCombat_Archery : ModuleRules
 {
-	public ScarletCombat(ReadOnlyTargetRules Target) : base(Target)
+	public ScarletCombat_Archery(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
@@ -26,7 +26,6 @@ public class ScarletCombat : ModuleRules
 			new string[]
 			{
 				"Core",
-                "ScarletStateMachines",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

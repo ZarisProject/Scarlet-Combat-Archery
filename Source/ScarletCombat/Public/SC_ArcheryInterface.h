@@ -17,7 +17,7 @@ class USC_ArcheryInterface : public UInterface
 /**
  * 
  */
-class SCARLETCOMBAT_API ISC_ArcheryInterface
+class SCARLETCOMBAT_ARCHERY_API ISC_ArcheryInterface
 {
 	GENERATED_BODY()
 

@@ -17,7 +17,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCooldownOver);
 
 
 UCLASS( Blueprintable, BlueprintType, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class SCARLETCOMBAT_API USC_ArcheryComponent : public UActorComponent, public ISC_ArcheryInterface
+class SCARLETCOMBAT_ARCHERY_API USC_ArcheryComponent : public UActorComponent, public ISC_ArcheryInterface
 {
 	GENERATED_BODY()
 

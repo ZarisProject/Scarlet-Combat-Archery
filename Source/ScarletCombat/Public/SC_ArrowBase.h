@@ -15,7 +15,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPierced, const FHitResult&, Hit,
 
 // CLASS
 UCLASS()
-class SCARLETCOMBAT_API ASC_ArrowBase : public AActor, public ISC_ArcheryInterface
+class SCARLETCOMBAT_ARCHERY_API ASC_ArrowBase : public AActor, public ISC_ArcheryInterface
 {
 	GENERATED_BODY()
 	

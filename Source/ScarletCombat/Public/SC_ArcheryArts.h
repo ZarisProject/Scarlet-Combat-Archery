@@ -19,7 +19,7 @@ enum class ESC_ArcheryArt : uint8
  * 
  */
 UCLASS(Blueprintable, BlueprintType, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class SCARLETCOMBAT_API USC_ArcheryArts : public USC_ArcheryComponent
+class SCARLETCOMBAT_ARCHERY_API USC_ArcheryArts : public USC_ArcheryComponent
 {
 	GENERATED_BODY()
 	

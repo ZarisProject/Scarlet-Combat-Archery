@@ -2,8 +2,8 @@
 	"FileVersion": 3,
 	"Version": 1,
 	"VersionName": "1.0",
-	"FriendlyName": "ScarletCombat",
-	"Description": "A collection of combat systems used in AkarFire's games",
+	"FriendlyName": "Scarlet Combat: Archery",
+	"Description": "An archery combat system originally built for Zaris Project",
 	"Category": "Other",
 	"CreatedBy": "AkatFire / K Scarlet",
 	"CreatedByURL": "",
@@ -16,7 +16,7 @@
 	"Installed": false,
 	"Modules": [
 		{
-			"Name": "ScarletCombat",
+			"Name": "ScarletCombat_Archery",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		}

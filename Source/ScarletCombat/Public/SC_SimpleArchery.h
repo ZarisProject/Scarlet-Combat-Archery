@@ -10,7 +10,7 @@
  * 
  */
 UCLASS(Blueprintable, BlueprintType, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class SCARLETCOMBAT_API USC_SimpleArchery : public USC_ArcheryComponent
+class SCARLETCOMBAT_ARCHERY_API USC_SimpleArchery : public USC_ArcheryComponent
 {
 	GENERATED_BODY()
 	
