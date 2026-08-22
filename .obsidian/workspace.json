@@ -46,8 +46,8 @@
               "state": {
                 "file": "Documentation/Archery/Archery State Machine.canvas",
                 "viewState": {
-                  "x": 243.40979580516318,
-                  "y": 183.82901501919366,
+                  "x": 419.8195917065508,
+                  "y": 191.0294020711825,
                   "zoom": -0.11111106695952416
                 }
               },
@@ -70,7 +70,8 @@
               "title": "Arrow Flight Physics"
             }
           }
-        ]
+        ],
+        "currentTab": 3
       }
     ],
     "direction": "vertical"
@@ -235,23 +236,23 @@
       "obsidian-excalidraw-plugin:New drawing": false
     }
   },
-  "active": "6b09afc9c5cb733f",
+  "active": "691cc957ca24ef8f",
   "lastOpenFiles": [
+    "fklu5gok.hah~",
+    "Documentation/Archery/Archery State Machine.canvas",
+    "Documentation/Archery/Archery Code Design.excalidraw.md",
+    "Documentation/Archery/Archery Roadmap.md",
+    "Documentation/Archery/Arrow Flight Physics.md",
     "Intermediate/Build/Win64/x64/UnrealEditor/Development/ScarletCombat/UnrealEditor-ScarletCombat.sup.lib",
     "Intermediate/Build/Win64/x64/UnrealEditor/Development/ScarletCombat/UnrealEditor-ScarletCombat.sup.exp",
     "Intermediate/Build/Win64/x64/UnrealEditor/Development/ScarletCombat/UnrealEditor-ScarletCombat.lib",
     "Binaries/Win64/UnrealEditor-ScarletCombat.pdb",
-    "Source/ScarletCombat/Private/howjlyat.os2~",
     "Intermediate/Build/Win64/UnrealEditor/Inc/ScarletCombat/UHT/ScarletCombat.init.gen.cpp.tmp",
-    "Intermediate/Build/Win64/UnrealEditor/Inc/ScarletCombat/UHT/SC_ArrowBase.gen.cpp.tmp",
-    "Documentation/Archery/Arrow Flight Physics.md",
-    "Source/ScarletCombat/Public/mjojbsgs.rua~",
-    "Source/ScarletCombat/Public/dnt4mesd.ybb~",
-    "Documentation/Archery/Archery Roadmap.md",
-    "Intermediate/Build/Win64/UnrealEditor/Inc/ScarletCombat/UHT/SC_ArrowBase.generated.h.tmp",
-    "Content/Meshes/Arrow/Arrow.uasset",
-    "Documentation/Archery/Archery Code Design.excalidraw.md",
-    "Documentation/Archery/Archery State Machine.canvas",
+    "Intermediate/Build/Win64/UnrealEditor/Inc/ScarletCombat/UHT/SC_ArcheryArts.gen.cpp.tmp",
+    "Intermediate/Build/Win64/UnrealEditor/Inc/ScarletCombat/UHT/SC_ArcheryArts.generated.h.tmp",
+    "Content/Blueprints/Example_ArcheryArtsCharacterBP.uasset",
+    "Content/Blueprints/Example_SimpleArcheryCharacterBP.uasset",
+    "Intermediate/Build/Win64/x64/UnrealEditor/Development/ScarletCombat/SC_ArcheryArts.cpp.obj",
     "Documentation/Archery/Archery Component.md",
     "README.md"
   ]

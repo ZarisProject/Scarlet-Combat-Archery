@@ -2,21 +2,30 @@
 - [x] Interface - `ISC_ArcheryInterface`
 	- [x] Animation data
 	- [x] Physics properties data
-- [ ] Arrow mechanics
-	- [ ] Gravity
-	- [ ] Air friction
-	- [ ] Lift
-	- [ ] Stability
-	- [ ] Piercing
-	- [ ] Bouncing
-	- [ ] Impact Impulse
-	- [ ] Landing
-	- [ ] Delegates
-		- [ ] On landed
-		- [ ] On bounced
-		- [ ] On pierced
-- [ ] Archery Arts
-	- [ ] Strong shot
-	- [ ] Rapid fire
-	- [ ] Multi-shot
-	- [ ] Trajectory curving
+		- [x] Density
+		- [x] Restitution
+	- [x] On arrow contact
+	- [x] On arrow landed
+	- [x] On pierced by arrow
+	- [x] On arrow bounce
+- [x] Arrow mechanics
+	- [x] Gravity
+	- [x] Air friction
+	- [x] Lift
+	- [x] Stability
+	- [x] Landing
+	- [x] Piercing
+	- [x] Bouncing
+	- [x] Impact Impulse
+	- [x] Delegates
+		- [x] On contact
+		- [x] On landed
+		- [x] On bounced
+		- [x] On pierced
+- [x] Archery Arts
+	- [x] Infrastructure
+	- [x] Normal
+	- [x] Strong shot
+	- [x] Rapid fire
+	- [x] Multi-shot
+- [ ] Documentation

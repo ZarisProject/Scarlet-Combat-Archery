@@ -52,6 +52,7 @@ $$
 $$
 *This function does not have any physics base and was written down on a whim.*
 
+#ToDo *Adjust turbulence functions, add time based variables.*
 
 ### Resulting Force
 
