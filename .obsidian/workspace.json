@@ -71,7 +71,7 @@
             }
           }
         ],
-        "currentTab": 3
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -236,13 +236,13 @@
       "obsidian-excalidraw-plugin:New drawing": false
     }
   },
-  "active": "691cc957ca24ef8f",
+  "active": "e4a9072876b791e3",
   "lastOpenFiles": [
-    "fklu5gok.hah~",
     "Documentation/Archery/Archery State Machine.canvas",
+    "Documentation/Archery/Arrow Flight Physics.md",
+    "fklu5gok.hah~",
     "Documentation/Archery/Archery Code Design.excalidraw.md",
     "Documentation/Archery/Archery Roadmap.md",
-    "Documentation/Archery/Arrow Flight Physics.md",
     "Intermediate/Build/Win64/x64/UnrealEditor/Development/ScarletCombat/UnrealEditor-ScarletCombat.sup.lib",
     "Intermediate/Build/Win64/x64/UnrealEditor/Development/ScarletCombat/UnrealEditor-ScarletCombat.sup.exp",
     "Intermediate/Build/Win64/x64/UnrealEditor/Development/ScarletCombat/UnrealEditor-ScarletCombat.lib",
@@ -252,7 +252,6 @@
     "Intermediate/Build/Win64/UnrealEditor/Inc/ScarletCombat/UHT/SC_ArcheryArts.generated.h.tmp",
     "Content/Blueprints/Example_ArcheryArtsCharacterBP.uasset",
     "Content/Blueprints/Example_SimpleArcheryCharacterBP.uasset",
-    "Intermediate/Build/Win64/x64/UnrealEditor/Development/ScarletCombat/SC_ArcheryArts.cpp.obj",
     "Documentation/Archery/Archery Component.md",
     "README.md"
   ]
